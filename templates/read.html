@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<style>
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .page-header h1 { margin: 0; color: #1a1a2e; }
+  .btn-add {
+    background: #e94560;
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+  .btn-add:hover { background: #c73652; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.93rem;
+  }
+  thead tr { background: #1a1a2e; color: #fff; }
+  thead th { padding: 12px 10px; text-align: left; }
+  tbody tr:nth-child(even) { background: #f7f7f7; }
+  tbody tr:hover { background: #eef4ff; }
+  td { padding: 10px; vertical-align: middle; border-bottom: 1px solid #e0e0e0; }
+  td img { width: 52px; height: 68px; object-fit: cover; border-radius: 3px; }
+  .action-links a {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: bold;
+    margin-right: 4px;
+  }
+  .btn-edit  { background: #0077cc; color: #fff; }
+  .btn-edit:hover { background: #005fa3; }
+  .btn-delete { background: #e94560; color: #fff; }
+  .btn-delete:hover { background: #c73652; }
+  .badge-read { background: #28a745; color: #fff; padding: 2px 7px; border-radius: 10px; font-size: 0.78rem; }
+  .empty { text-align: center; padding: 40px; color: #888; }
+</style>
+
+<div class="page-header">
+  <h1>All Books</h1>
+  <a class="btn-add" href="{{ url_for('create') }}">+ Add Book</a>
+</div>
+
+{% if books %}
+<table>
+  <thead>
+    <tr>
+      <th>Cover</th>
+      <th>Title</th>
+      <th>Author</th>
+      <th>ISBN</th>
+      <th>Category</th>
+      <th>Price</th>
+      <th>Read&nbsp;Now</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for book in books %}
+    <tr>
+      <td>
+        <img
+          src="{{ url_for('static', filename='images/books/' + book['image']) }}"
+          alt="{{ book['title'] }}"
+          onerror="this.src=''"
+        >
+      </td>
+      <td><strong>{{ book['title'] }}</strong></td>
+      <td>{{ book['author'] }}</td>
+      <td>{{ book['isbn'] }}</td>
+      <td>{{ book['categoryName'] }}</td>
+      <td>${{ '%.2f' | format(book['price']) }}</td>
+      <td>
+        {% if book['readNow'] == 1 %}
+          <span class="badge-read">Yes</span>
+        {% else %}
+          No
+        {% endif %}
+      </td>
+      <td class="action-links">
+        <a class="btn-edit"   href="{{ url_for('edit',   book_id=book['bookId']) }}">Edit</a>
+        <a class="btn-delete" href="{{ url_for('delete', book_id=book['bookId']) }}"
+           onclick="return confirm('Delete \'{{ book['title'] }}\'?')">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No books found. <a href="{{ url_for('create') }}">Add the first one!</a></p>
+{% endif %}
+{% endblock %}
